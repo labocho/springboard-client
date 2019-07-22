@@ -4,7 +4,7 @@ module Springboard
   class Client
     Config = Struct.new(:client, :server, :networks, keyword_init: true)
     class Config
-      Client = Struct.new(:log_level, keyword_init: true)
+      Client = Struct.new(:log_level, :log_format, keyword_init: true)
       Server = Struct.new(:host, :user, keyword_init: true)
       Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, keyword_init: true)
 
@@ -17,6 +17,7 @@ module Springboard
         else
           Logger::Severity::INFO
         end
+        hash[:client][:log_format] = hash[:client][:log_format]
 
         hash[:client] = Client.new(hash[:client] || {}).freeze
         hash[:server] = Server.new(hash[:server]).freeze

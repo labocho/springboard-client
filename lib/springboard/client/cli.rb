@@ -9,12 +9,24 @@ module Springboard
 
       def start(argv)
         options = {
-          verbose: false
+          log_format: "default",
+          verbose: false,
         }
 
         optparse = OptionParser.new do |o|
           o.banner = "Usage: springboard [options] NETWORK_NAME"
           o.on("-v", "--verbose", TrueClass) {|b| options[:verbose] = b }
+          o.on("-f", "--log-format FORMAT") {|s|
+            case s
+            when "d", "default"
+              options[:log_format] = "default"
+            when "j", "json"
+              options[:log_format] = "json"
+            else
+              warn "Unknown log format: #{s.inspect}"
+              exit 1
+            end
+          }
           o.parse!(argv)
         end
 
@@ -23,10 +35,18 @@ module Springboard
           exit 1
         end
 
-        client = Client.load
-        client.logger.level = Logger::Severity::DEBUG if options[:verbose]
+        config_overrides = {}
+        if options[:verbose]
+          config_overrides["client"] ||= {}
+          config_overrides["client"]["log_level"] = "DEBUG"
+        end
 
-        client.connect(argv.first)
+        if options[:log_format]
+          config_overrides["client"] ||= {}
+          config_overrides["client"]["log_format"] = options[:log_format]
+        end
+
+        Client.load(config_overrides).connect(argv.first)
       end
     end
   end
