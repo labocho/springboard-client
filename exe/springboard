@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require "springboard/client"
+
+Springboard::Client.load.connect(ARGV.first)
