@@ -44,7 +44,11 @@ module Springboard
 
         joined = cmd_and_args.shelljoin
         logger.debug "(remote) #{joined}"
-        _ = @ssh_session.exec!(joined)
+        out = @ssh_session.exec!(joined)
+
+        unless out.exitstatus == 0
+          raise "Command #{joined.inspect} via SSH exited with #{out.exitstatus}: #{out}"
+        end
       end
 
       def sh(cmd_and_args)
@@ -53,7 +57,7 @@ module Springboard
         o, e, s = Open3.capture3(joined)
 
         unless s.success?
-          raise "Command ${joined.inspect} exited with #{s.exitstatus}: #{e}"
+          raise "Command #{joined.inspect} exited with #{s.exitstatus}: #{e}"
         end
 
         o
