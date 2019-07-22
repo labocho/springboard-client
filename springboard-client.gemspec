@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "net-ssh", "~> 5.2.0"
+  spec.add_dependency "rainbow", "~> 3.0.0"
 
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "byebug", "~> 11.0"

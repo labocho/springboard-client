@@ -14,7 +14,7 @@ module Springboard
       end
 
       def start
-        logger.info "Try to connect springboard server #{server.user}@#{server.host}"
+        logger.info "Try to connect springboard server #{server.user}@#{server.host}..."
 
         Net::SSH.start(server.host, server.user) do |ssh_session|
           @ssh_session = ssh_session
@@ -22,10 +22,10 @@ module Springboard
 
           begin
             create_connection do
-              logger.info "Try to connect network #{network.name}"
+              logger.info "Try to connect network #{network.name}..."
               activate_connection do
                 create_route do
-                  logger.info "Connected network #{network.name} (ctrl+c to disctonnect)"
+                  logger.info Rainbow("Connected network #{network.name} (#{network.ip_range}) (ctrl+c to disctonnect)").green
                   sleep
                 end
               end
@@ -34,7 +34,7 @@ module Springboard
             raise unless Signal.signame($!.signo) == "INT"
           end
 
-          logger.info "Disconnected"
+          logger.info Rainbow("Disconnected").green
         end
       end
 

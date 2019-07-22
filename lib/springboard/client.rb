@@ -6,6 +6,7 @@ require "shellwords"
 require "open3"
 require "logger"
 require "json"
+require "rainbow"
 
 module Springboard
   class Client
@@ -43,6 +44,7 @@ module Springboard
 
       log_formatter = case config.client.log_format
       when "json"
+        Rainbow.enabled = false
         json_log_formatter
       when "default"
         default_log_formatter
@@ -50,6 +52,7 @@ module Springboard
         raise "Unknown log format: #{config.client.log_format.inspect}"
       end
 
+      Rainbow.enabled = false unless $stderr.tty?
       @logger = Logger.new(
         $stderr,
         formatter: log_formatter,
@@ -64,7 +67,7 @@ module Springboard
 
     def default_log_formatter
       -> (_severity, time, _progname, msg) {
-        "[#{time}] #{msg}\n"
+        Rainbow("[#{time}]").dimgray + " " + msg + "\n"
       }
     end
 
