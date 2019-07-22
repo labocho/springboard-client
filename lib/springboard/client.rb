@@ -16,15 +16,10 @@ module Springboard
 
     class Error < StandardError; end
 
-    CONFIG_FILE = "#{ENV["HOME"]}/.springboard.yml".freeze
-
     attr_reader :config, :logger
 
     def self.load(config_overrides = {})
-      raise "Config file not found" unless File.exist?(CONFIG_FILE)
-
-      config = Config.parse(deep_merge!(YAML.load_file(CONFIG_FILE), config_overrides))
-      new(config)
+      new(Config.load(config_overrides))
     end
 
     def self.deep_merge!(h1, h2)

@@ -4,6 +4,8 @@ module Springboard
   class Client
     Config = Struct.new(:client, :server, :networks, keyword_init: true)
     class Config
+      CONFIG_FILE = "#{ENV["HOME"]}/.springboard.yml".freeze
+
       Client = Struct.new(:log_level, :log_format, keyword_init: true)
       Server = Struct.new(:host, :user, keyword_init: true)
       Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, keyword_init: true)
@@ -25,6 +27,24 @@ module Springboard
         new(hash).freeze
       end
 
+      def self.load(config_overrides = {})
+        raise "Config file not found" unless File.exist?(CONFIG_FILE)
+
+        Config.parse(deep_merge!(YAML.load_file(CONFIG_FILE), config_overrides))
+      end
+
+      def self.deep_merge!(h1, h2)
+        h2.each do |k, v|
+          h1[k] = case v
+          when Hash
+            deep_merge!(h1[k], v)
+          else
+            v
+          end
+        end
+        h1
+      end
+
       def self.deep_symbolize_keys(o)
         case o
         when Hash
@@ -40,4 +60,3 @@ module Springboard
     end
   end
 end
-

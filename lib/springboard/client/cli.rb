@@ -27,6 +27,10 @@ module Springboard
               exit 1
             end
           }
+          o.on("-l", "--list-networks") {
+            list_networks
+            exit
+          }
           o.parse!(argv)
         end
 
@@ -47,6 +51,11 @@ module Springboard
         end
 
         Client.load(config_overrides).connect(argv.first)
+      end
+
+      private
+      def list_networks
+        Config.load.networks.each {|n| puts n.name }
       end
     end
   end
