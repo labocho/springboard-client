@@ -9,6 +9,7 @@ require "json"
 
 module Springboard
   class Client
+    require_relative "client/cli"
     require_relative "client/config"
     require_relative "client/session"
 
