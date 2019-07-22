@@ -1,28 +1,35 @@
-# Springboard::Client
+# springboard-client
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/springboard/client`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This is springboard client. This connect springboard server, connect VPN, and configure route to the server.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'springboard-client'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install springboard-client
+    $ git clone https://github.com/labocho/springboard-client.git
+    $ cd springboard-client
+    $ rake install
 
 ## Usage
 
-TODO: Write usage instructions here
+Please make `~/.springboard.yml` like below.
+
+    client:
+        log_format: default
+        log_level: INFO
+    server:
+        host: "192.168.x.x" # springboard server host
+        user: springboard # springboard server user name
+    networks: # vpn configuration
+        - name: test-vpn
+          type: l2tp
+          gateway: test-vpn.example.com
+          user: vpnuser
+          password: vpnpass
+          preshared_key: presharedkey
+          ip_range: "192.168.x.0/24"
+
+And run `springboard` to connect VPN.
+
+     $ springboard test-vpn
 
 ## Development
 
