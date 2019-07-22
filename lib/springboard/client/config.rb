@@ -1,12 +1,24 @@
+require "logger"
+
 module Springboard
   class Client
-    Config = Struct.new(:server, :networks, keyword_init: true)
+    Config = Struct.new(:client, :server, :networks, keyword_init: true)
     class Config
+      Client = Struct.new(:log_level, keyword_init: true)
       Server = Struct.new(:host, :user, keyword_init: true)
       Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, keyword_init: true)
 
       def self.parse(string_keyed_hash)
         hash = deep_symbolize_keys(string_keyed_hash)
+
+        hash[:client] ||= {}
+        hash[:client][:log_level] = if hash[:client][:log_level]
+          Logger::Severity.const_get(hash[:client][:log_level])
+        else
+          Logger::Severity::INFO
+        end
+
+        hash[:client] = Client.new(hash[:client] || {}).freeze
         hash[:server] = Server.new(hash[:server]).freeze
         hash[:networks] = hash[:networks].map {|h| Network.new(h).freeze }.freeze
         new(hash).freeze

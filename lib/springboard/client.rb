@@ -4,6 +4,8 @@ require "yaml"
 require "net/ssh"
 require "shellwords"
 require "open3"
+require "logger"
+require "json"
 
 module Springboard
   class Client
@@ -13,7 +15,7 @@ module Springboard
 
     CONFIG_FILE = "#{ENV["HOME"]}/.springboard.yml".freeze
 
-    attr_reader :config
+    attr_reader :config, :logger
 
     def self.load
       raise "Config file not found" unless File.exist?(CONFIG_FILE)
@@ -24,21 +26,30 @@ module Springboard
 
     def initialize(config)
       @config = config
+
+      @logger = Logger.new(
+        $stderr,
+        formatter: -> (severity, time, progname, msg) {
+          {severity: severity, time: time, progname: progname, msg: msg}.to_json + "\n"
+        },
+        level: config.client.log_level,
+      )
     end
 
     def connect(name)
       network = config.networks.find {|n| n.name == name } || raise("Network named #{name.inspect} not found")
 
-      log "ssh #{config.server.user}@#{config.server.host}"
+      logger.info "Try to connect springboard server #{config.server.user}@#{config.server.host}"
       Net::SSH.start(config.server.host, config.server.user) do |session|
         @session = session
-        log "connected to springboard server"
+        logger.info "Connected to springboard server"
 
         begin
           create_connection(network) do
+            logger.info "Try to connect network #{network.name}"
             activate_connection(network) do
               create_route(network) do
-                log "connected to #{network.name} (ctrl+c to disctonnect)"
+                logger.info "Connected network #{network.name} (ctrl+c to disctonnect)"
                 sleep
               end
             end
@@ -46,6 +57,8 @@ module Springboard
         rescue SignalException
           raise unless Signal.signame($!.signo) == "INT"
         end
+
+        logger.info "Disconnected"
       end
     end
 
@@ -54,13 +67,13 @@ module Springboard
       raise "SSH not started" unless @session
 
       joined = cmd_and_args.shelljoin
-      warn "(remote) #{joined}"
+      logger.debug "(remote) #{joined}"
       _ = @session.exec!(joined)
     end
 
     def sh(cmd_and_args)
       joined = cmd_and_args.shelljoin
-      warn "(local) #{joined}"
+      logger.debug "(local) #{joined}"
       o, e, s = Open3.capture3(joined)
 
       unless s.success?
@@ -68,10 +81,6 @@ module Springboard
       end
 
       o
-    end
-
-    def log(message)
-      warn message
     end
 
     def nmcli_config_hash_to_array(hash)
