@@ -71,9 +71,11 @@ module Springboard
 
           if v.is_a?(Hash)
             v = v.map {|hk, hv|
+              next if hv.nil?
+
               hk = hk.to_s.gsub("_", "-")
-              "#{hk}=#{hv}"
-            }.join(",")
+              "#{hk}=#{hv}".gsub(",", "\\,")
+            }.compact.join(",")
           end
 
           [k, v]
@@ -117,6 +119,8 @@ module Springboard
             "vpn.data": {
               gateway: network.gateway,
               ipsec_enabled: "yes",
+              ipsec_esp: network.ipsec_esp, # 複数指定は nmcli の仕様上できなさそう (vpn.data にカンマを含む値を設定できないため)
+              ipsec_ike: network.ipsec_ike, # 複数指定は nmcli の仕様上できなさそう (vpn.data にカンマを含む値を設定できないため)
               ipsec_psk: "0s" + Base64.strict_encode64(network.preshared_key),
               ipsec_remote_id: network.ipsec_remote_id,
               refuse_chap: network.require_mppe_128 ? "yes" : nil,

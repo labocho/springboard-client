@@ -8,7 +8,7 @@ module Springboard
 
       Client = Struct.new(:log_level, :log_format, keyword_init: true)
       Server = Struct.new(:host, :user, keyword_init: true)
-      Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, :ipsec_remote_id, :require_mppe_128, keyword_init: true)
+      Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, :ipsec_remote_id, :ipsec_ike, :ipsec_esp, :require_mppe_128, keyword_init: true)
 
       def self.parse(string_keyed_hash)
         hash = deep_symbolize_keys(string_keyed_hash)
