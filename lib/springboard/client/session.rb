@@ -64,7 +64,9 @@ module Springboard
       end
 
       def nmcli_config_hash_to_array(hash)
-        hash.flat_map do |k, v|
+        hash.flat_map {|k, v|
+          next if v.nil?
+
           k = k.to_s.gsub("_", "-")
 
           if v.is_a?(Hash)
@@ -75,7 +77,7 @@ module Springboard
           end
 
           [k, v]
-        end
+        }.compact
       end
 
       def create_connection
@@ -116,6 +118,11 @@ module Springboard
               gateway: network.gateway,
               ipsec_enabled: "yes",
               ipsec_psk: "0s" + Base64.strict_encode64(network.preshared_key),
+              ipsec_remote_id: network.ipsec_remote_id,
+              refuse_chap: network.require_mppe_128 ? "yes" : nil,
+              refuse_eap: network.require_mppe_128 ? "yes" : nil,
+              refuse_pap: network.require_mppe_128 ? "yes" : nil,
+              require_mppe_128: network.require_mppe_128 ? "yes" : nil,
               password_flags: "0",
             },
             "vpn.secrets": {
