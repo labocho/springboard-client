@@ -1,6 +1,6 @@
 # springboard-client
 
-This is springboard client. This connect springboard server, connect VPN, and configure route to the server.
+This is springboard client. This connect to springboard server, VPN, and configure route to the server.
 
 ## Installation
 
@@ -26,8 +26,12 @@ Please make `~/.springboard.yml` like below.
           password: vpnpass
           preshared_key: presharedkey
           ip_range: "192.168.x.0/24"
+          # ipsec_remote_id: "192.168.x.1"
+          # ipsec_ike: aes256-sha1
+          # ipsec_esp: aes256-sha1
+          # require_mppe_128: false
 
-And run `springboard` to connect VPN.
+And run `springboard` to connect VPN. Press Ctrl+C to disconnect.
 
      $ springboard test-vpn
 
