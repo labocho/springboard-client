@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    springboard-client (0.1.0)
+    springboard-client (0.1.1)
       net-ssh (~> 5.2.0)
       rainbow (~> 3.0.0)
 

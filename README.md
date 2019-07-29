@@ -16,8 +16,7 @@ Please make `~/.springboard.yml` like below.
         log_format: default
         log_level: INFO
     server:
-        host: "192.168.x.x" # springboard server host
-        user: springboard # springboard server user name
+        host: "192.168.x.x" # springboard server address
     networks: # vpn configuration
         - name: test-vpn
           type: l2tp
