@@ -14,9 +14,9 @@ module Springboard
       end
 
       def start
-        logger.info "Try to connect springboard server vagrant@127.0.0.1:2222..."
+        logger.info "Try to connect springboard server vagrant@127.0.0.1:2200..."
 
-        Net::SSH.start("127.0.0.1", "vagrant", port: 2222, keys: ["#{ENV["HOME"]}/.springboard-server/.vagrant/machines/default/virtualbox/private_key"]) do |ssh_session|
+        Net::SSH.start("127.0.0.1", "vagrant", port: 2200, keys: ["#{ENV["HOME"]}/.springboard-server/.vagrant/machines/default/virtualbox/private_key"]) do |ssh_session|
           @ssh_session = ssh_session
           logger.info "Connected to springboard server"
 
