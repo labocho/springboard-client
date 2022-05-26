@@ -7,7 +7,7 @@ module Springboard
       CONFIG_FILE = "#{ENV["HOME"]}/.springboard.yml".freeze
 
       Client = Struct.new(:log_level, :log_format, keyword_init: true)
-      Server = Struct.new(:host, :port, keyword_init: true)
+      Server = Struct.new(:host, :port, :user, :vagrant, keyword_init: true)
       Network = Struct.new(:name, :type, :gateway, :user, :password, :preshared_key, :ip_range, :ipsec_remote_id, :ipsec_ike, :ipsec_esp, :require_mppe_128, keyword_init: true)
 
       def self.parse(string_keyed_hash)
@@ -30,7 +30,7 @@ module Springboard
       def self.load(config_overrides = {})
         raise "Config file not found" unless File.exist?(CONFIG_FILE)
 
-        Config.parse(deep_merge!(YAML.load_file(CONFIG_FILE), config_overrides))
+        Config.parse(deep_merge!(YAML.unsafe_load(File.read(CONFIG_FILE)), config_overrides))
       end
 
       def self.deep_merge!(h1, h2)
